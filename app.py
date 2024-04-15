@@ -3,7 +3,7 @@ from nlp_processing.file_reader import extract_text_from_file
 from nlp_tasks.summarization import summarize_text
 from nlp_tasks.keyword_extraction import extract_keywords
 from nlp_tasks.sentiment_analysis import analyze_sentiment
-from nlp_tasks.generate_test_plan import generate_test_plan
+from nlp_tasks.generate_test_plan_gpt3 import generate_test_plan
 
 st.title('Automated Test Plan Generator')
 

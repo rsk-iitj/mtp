@@ -41,3 +41,22 @@ def extract_text_from_file(uploaded_file):
         return read_excel(uploaded_file)
     else:
         return "Unsupported file format"
+
+
+import os
+from docx import Document
+
+def extract_text_from_file_no_ui(filepath):
+    text = ""
+    _, ext = os.path.splitext(filepath)  # Directly use filepath
+    if ext == ".docx":
+        doc = Document(filepath)
+        text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+    elif ext == ".txt":
+        with open(filepath, 'r', encoding='utf-8') as file:
+            text = file.read()
+    # Add other file type conditions as needed
+    return text
+
+
+
