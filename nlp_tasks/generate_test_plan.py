@@ -1,4 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
 # Initialize the model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained('EleutherAI/gpt-j-6B')
@@ -8,10 +9,23 @@ model = AutoModelForCausalLM.from_pretrained('EleutherAI/gpt-j-6B')
 if tokenizer.pad_token is None:
     tokenizer.pad_token = tokenizer.eos_token
 
+# Check for GPU availability and move model to GPU if available
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+model.to(device)
+
 def generate_section_text(model, tokenizer, section, summary, keywords, sentiment_label):
     """Generate text for a given section of the test plan using a GPT model."""
     prompt = f"Create a concise, informative section titled '{section}' for a test plan. Focus on: {summary}, using keywords: {', '.join(keywords)}. The overall sentiment is {sentiment_label}."
-    inputs = tokenizer(prompt, return_tensors='pt', padding='max_length', truncation=True, max_length=tokenizer.model_max_length - 50)
+    inputs = tokenizer.encode_plus(
+        prompt,
+        return_tensors='pt',
+        padding='max_length',
+        truncation=True,
+        max_length=tokenizer.model_max_length - 50
+    )
+
+    # Move the inputs to the same device as the model
+    inputs = {k: v.to(device) for k, v in inputs.items()}
 
     # Generate output ensuring not to exceed total max length
     outputs = model.generate(
